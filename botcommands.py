@@ -37,9 +37,13 @@ class Kukalagaa:
             data = dom4status.query(settings.domserver, settings.ports[i])
             laggers = []
             msg = ""
+            print len(data.nations)
             for n in data.nations:
-                if n.submitted != 2 and n.statusnum == 1:
-                    print n.name
+                print n.name
+                print n.submitted
+                print n.statusnum
+                if n.submitted != 2 and (n.statusnum == 1 or n.statusnum == 254):
+                    print settings.players[i][n.name]
                     laggers.append(settings.players[i][n.name])
             if len(laggers) > 1:
                 for j in range(len(laggers)):
