@@ -3,8 +3,9 @@
 import random
 import dom4status
 import settings
+import filereader
 
-# t‰h‰n sanastoon lis‰t‰‰n komennot ja niit‰ vastaavat oliot
+# t√§h√§n sanastoon lis√§t√§√§n komennot ja niit√§ vastaavat oliot
 
 command_dict = {}
 
@@ -12,29 +13,31 @@ command_dict = {}
 
 class Vuoro:
 
-    def askturn(self, i, irc):
+    def askturn(self, name, port, irc):
         try:
-            data = dom4status.query(settings.domserver, settings.ports[i])
-            irc.sendmsg(settings.games[i] + 'n vuoro ' + str(data.turn) + ' menossa, ' + str(data.timer / 3600000) + 'h aikaa tehd‰ vuoro.')
+            data = dom4status.query(settings.domserver, port)
+            irc.sendmsg(name + 'n vuoro ' + str(data.turn) + ' menossa, ' + str(data.timer / 3600000) + 'h aikaa tehd√§ vuoro.')
         except:
+            irc.sendmsg("Virhe! " + name + "n servu on nurin!")
             pass
 
     def main(self, irc, line):
+        f = filereader.read(settings.teamfile)
         if len(line) < 5:
-            for i in range(len(settings.games)):
-                self.askturn(i, irc)
+            for i in range(len(f)):
+                self.askturn(f[i].name, f[i].port, irc)
         else:
-            for i in range(len(settings.games)):
-                if line[4] == settings.games[i]:
-                    self.askturn(i, irc)
+            for i in range(len(f)):
+                if line[4] == f[i].name:
+                    self.askturn(f[i].name, f[i].port, irc)
         
 command_dict[ ':!vuoro' ] = Vuoro()
 
 class Kukalagaa:
 
-    def asklaggers(self, i, irc): 
+    def asklaggers(self, name, port, players, irc): 
         try:
-            data = dom4status.query(settings.domserver, settings.ports[i])
+            data = dom4status.query(settings.domserver, port)
             laggers = []
             msg = ""
             print len(data.nations)
@@ -42,32 +45,32 @@ class Kukalagaa:
                 print n.name
                 print n.submitted
                 print n.statusnum
-                if n.submitted != 2 and (n.statusnum == 1 or n.statusnum == 254):
-                    print settings.players[i][n.name]
-                    laggers.append(settings.players[i][n.name])
+                if n.submitted != 2 and (n.statusnum == 1 or n.statusnum == 254) and n.name in players:
+                    print players[n.name]
+                    laggers.append(players[n.name])
             if len(laggers) > 1:
                 for j in range(len(laggers)):
                     if len(laggers) - j > 1:
                         msg += (laggers[j] + ', ')
-                        print msg
                     else:
                         msg += laggers[j]
-                        print msg
-                msg += (' lagaavat ' + settings.games[i] + 'ss‰!')
+                msg += (' lagaavat ' + name + 'ss√§!')
             else:
-                msg += (laggers[0] + ' lagaa ' + settings.games[i] + 'ss‰!')
+                msg += (laggers[0] + ' lagaa ' + name + 'ss√§!')
             irc.sendmsg(msg)            
         except:
+            irc.sendmsg("Virhe! " + name + "n servu on nurin!")
             pass
             
     def main(self, irc, line):
+        f = filereader.read(settings.teamfile)
         if len(line) < 5:
-            for i in range(len(settings.games)):
-                self.asklaggers(i, irc)
+            for i in range(len(f)):
+                self.asklaggers(f[i].name, f[i].port, f[i].players, irc)
         else:
-            for i in range(len(settings.games)):
-                if line[4] == settings.games[i]:
-                    self.asklaggers(i, irc)
+            for i in range(len(f)):
+                if line[4] == f[i].name:
+                    self.asklaggers(f[i].name, f[i].port, f[i].players, irc)
                         
 
 command_dict[ ':!kukalagaa' ] = Kukalagaa()

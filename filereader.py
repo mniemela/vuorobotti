@@ -7,33 +7,35 @@ class Gamedata:
         self.port = port
         self.players = players
 
-class Filereader:
 
-    def read(self, file):
-        names = []
-        ports = []
-        players = []
-        with open(file, 'r') as f:
-            newgame = True
-            gamenum = 0
-            for line in f:
-                if newgame and line.strip() != "":
-                    newgame = False
-                    data = line.split(',')
-                    names.append(data[0])
-                    ports.append(int(data[1]))
-                    players.append({})
-                elif line.strip() == "":
-                    if not newgame:
-                        gamenum =+ 1
-                    newgame = True
-                else:
-                    data = line.split(',')
-                    players[gamenum][data[0].strip()] = data[1].strip()
-        games = []
-        for i in range(gamenum + 1):
-            games.append(Gamedata(names[i], ports[i], players[i]))
-        
-        return games
+def read(file):
+    names = []
+    ports = []
+    players = []
+    with open(file, 'r') as f:
+        newgame = True
+        gamenum = 0
+        for line in f:
+            line = line.decode('string-escape').decode("utf-8")
+            print line
+            if newgame and line.strip() != "":
+                newgame = False
+                data = line.split(',')
+                names.append(data[0])
+                ports.append(int(data[1]))
+                players.append({})
+            elif line.strip() == "":
+                if not newgame:
+                    gamenum += 1
+                newgame = True
+            else:
+                data = line.split(',')
+                players[gamenum][data[0].strip()] = data[1].strip()
+    games = []
+    print gamenum
+    for i in range(gamenum + 1):
+        games.append(Gamedata(names[i], ports[i], players[i]))
+    
+    return games
         
         

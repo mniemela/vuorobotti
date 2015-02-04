@@ -7,4 +7,4 @@ channel = '#jumalsota_test'
 server = 'irc.cc.tut.fi'
 domserver = 'ruoska.tontut.fi'
 port = 6667
-teamfile = 'teams.txt'
+teamfile = 'games.txt'

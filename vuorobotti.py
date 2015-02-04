@@ -8,8 +8,8 @@ import sys
 import sched, time
 import settings
 
-#onkelmia: ctrl-c ei lopeta threadeja, eik‰ tajua reconnectata jos yhteys
-#katkeaa. lis‰ksi ei tajua vaihtaa nikki‰ jos nikki rekisterˆity
+#onkelmia: ctrl-c ei lopeta threadeja, eik√§ tajua reconnectata jos yhteys
+#katkeaa. lis√§ksi ei tajua vaihtaa nikki√§ jos nikki rekister√∂ity
 
 
 class Ircbot:
@@ -17,7 +17,7 @@ class Ircbot:
     def __init__( self):
 
 
-        # v‰ltt‰m‰ttˆmi‰ tietoja
+        # v√§ltt√§m√§tt√∂mi√§ tietoja
 
         self.server   = settings.server
         self.port     = settings.port
@@ -35,7 +35,7 @@ class Ircbot:
 
         self.commands = botcommands.command_dict
 
-        # p‰‰looppia toistettan kunnes done = 1
+        # p√§√§looppia toistettan kunnes done = 1
 
         self.done     = 0
 
@@ -46,7 +46,7 @@ class Ircbot:
         self.tmr = Timer(60, self.clearCounter, ())
         self.tmr.start()
 
-    #nollataan sp‰mminestolaskuri
+    #nollataan sp√§mminestolaskuri
     def clearCounter(self):
         self.msgcount = 0
         self.tmr = Timer(60, self.clearCounter, ())
@@ -56,7 +56,7 @@ class Ircbot:
 
         self.socket.send( (string + '\r\n'))
 
-    #l‰hett‰‰ viestin, jos l‰hetetty 6 viesti‰ minuutissa, ei tee mit‰‰n
+    #l√§hett√§√§ viestin, jos l√§hetetty 6 viesti√§ minuutissa, ei tee mit√§√§n
     def sendmsg( self, string):
 
         if self.msgcount < 10:
@@ -108,7 +108,7 @@ class Ircbot:
              self.send( 'PONG :abc' )
 
         elif len(line) > 1 and (line[1] == '437' or line[1] == '433'):
-        
+            
             if self.nick == settings.nick2:
                 self.send( 'QUIT')
                 self.socket.close()
@@ -124,7 +124,7 @@ class Ircbot:
                 return
 
 
-            # suoritetaan komennot jos niit‰ on tullut
+            # suoritetaan komennot jos niit√§ on tullut
 
             self.commands[ line[3] ].main( self , line )
 
