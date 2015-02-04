@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+﻿# -*- coding: utf-8 -*-
 
 class Gamedata:
 
@@ -16,8 +16,6 @@ def read(file):
         newgame = True
         gamenum = 0
         for line in f:
-            line = line.decode('string-escape').decode("utf-8")
-            print line
             if newgame and line.strip() != "":
                 newgame = False
                 data = line.split(',')
@@ -32,7 +30,6 @@ def read(file):
                 data = line.split(',')
                 players[gamenum][data[0].strip()] = data[1].strip()
     games = []
-    print gamenum
     for i in range(gamenum + 1):
         games.append(Gamedata(names[i], ports[i], players[i]))
     

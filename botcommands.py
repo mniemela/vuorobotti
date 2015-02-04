@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+﻿# -*- coding: utf-8 -*-
 
 import random
 import dom4status
@@ -16,10 +16,12 @@ class Vuoro:
     def askturn(self, name, port, irc):
         try:
             data = dom4status.query(settings.domserver, port)
-            irc.sendmsg(name + 'n vuoro ' + str(data.turn) + ' menossa, ' + str(data.timer / 3600000) + 'h aikaa tehdä vuoro.')
+            print "yritetään lähettää"
+            irc.sendmsg(name + 'n vuoro ' + str(data.turn) + ' menossa, ' + str(data.timer / 3600000) + 'h aikaa tehda vuoro.')
+            print "lähetetty"
         except:
             irc.sendmsg("Virhe! " + name + "n servu on nurin!")
-            pass
+            raise
 
     def main(self, irc, line):
         f = filereader.read(settings.teamfile)
@@ -50,6 +52,8 @@ class Kukalagaa:
                     laggers.append(players[n.name])
             if len(laggers) > 1:
                 for j in range(len(laggers)):
+                    print "round " + str(j)
+                    print msg
                     if len(laggers) - j > 1:
                         msg += (laggers[j] + ', ')
                     else:
@@ -57,10 +61,11 @@ class Kukalagaa:
                 msg += (' lagaavat ' + name + 'ssä!')
             else:
                 msg += (laggers[0] + ' lagaa ' + name + 'ssä!')
+            print "sending"
             irc.sendmsg(msg)            
         except:
             irc.sendmsg("Virhe! " + name + "n servu on nurin!")
-            pass
+            raise
             
     def main(self, irc, line):
         f = filereader.read(settings.teamfile)

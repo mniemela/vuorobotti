@@ -1,8 +1,8 @@
-
+﻿
 # Settings for irc bot
 name = 'Vuorobotti'
-nick = 'Vuorobotti__'
-nick2 = 'Vuorobotti___'
+nick = 'Vuorobotti___'
+nick2 = 'Vuorobotti____'
 channel = '#jumalsota_test'
 server = 'irc.cc.tut.fi'
 domserver = 'ruoska.tontut.fi'
