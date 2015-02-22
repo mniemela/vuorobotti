@@ -16,12 +16,9 @@ class Vuoro:
     def askturn(self, name, port, irc):
         try:
             data = dom4status.query(settings.domserver, port)
-            print "yritetään lähettää"
             irc.sendmsg(name + 'n vuoro ' + str(data.turn) + ' menossa, ' + str(data.timer / 3600000) + 'h aikaa tehda vuoro.')
-            print "lähetetty"
         except:
-            irc.sendmsg("Virhe! " + name + "n servu on nurin!")
-            raise
+            irc.sendmsg("Virhe! " + name + "n servuun ei saa yhteyttä!")
 
     def main(self, irc, line):
         f = filereader.read(settings.teamfile)
@@ -41,19 +38,18 @@ class Kukalagaa:
         try:
             data = dom4status.query(settings.domserver, port)
             laggers = []
+            desuralaggers = 0
             msg = ""
-            print len(data.nations)
             for n in data.nations:
-                print n.name
-                print n.submitted
-                print n.statusnum
                 if n.submitted != 2 and (n.statusnum == 1 or n.statusnum == 254) and n.name in players:
                     print players[n.name]
                     laggers.append(players[n.name])
+                elif n.submitted != 2 and (n.statusnum == 1 or n.statusnum == 254):
+                    desuralaggers += 1
+            if (len(players) < len(data.nations) and desuralaggers > 0):
+                laggers.insert(0, "Desura")
             if len(laggers) > 1:
                 for j in range(len(laggers)):
-                    print "round " + str(j)
-                    print msg
                     if len(laggers) - j > 1:
                         msg += (laggers[j] + ', ')
                     else:
@@ -61,11 +57,9 @@ class Kukalagaa:
                 msg += (' lagaavat ' + name + 'ssä!')
             else:
                 msg += (laggers[0] + ' lagaa ' + name + 'ssä!')
-            print "sending"
             irc.sendmsg(msg)            
         except:
-            irc.sendmsg("Virhe! " + name + "n servu on nurin!")
-            raise
+            irc.sendmsg("Virhe! " + name + "n servuun ei saa yhteyttä!")
             
     def main(self, irc, line):
         f = filereader.read(settings.teamfile)

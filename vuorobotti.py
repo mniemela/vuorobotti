@@ -7,6 +7,8 @@ from threading import Timer
 import sys
 import sched, time
 import settings
+import filereader
+import dom4status
 
 #onkelmia: ctrl-c ei lopeta threadeja, eikä tajua reconnectata jos yhteys
 #katkeaa. lisäksi ei tajua vaihtaa nikkiä jos nikki rekisteröity
@@ -70,15 +72,34 @@ class Ircbot:
             self.send(('NOTICE %s :' % self.channel) + string)
 
     def connect( self ):
-        self.listensocket.bind(('localhost', 666))
+        self.listensocket.bind(('localhost', 6666))
         self.listensocket.listen(5)
         self.socket.connect( ( self.server, self.port ) )
         self.send( 'NICK %s' % self.nick )
         self.send( 'USER %s a a :%s' % ( self.username, self.realname ) )
 
         self.send( 'JOIN %s' % self.channel )
-    
-    def sendTurnChangeMsg(self, conn):
+        
+    def sendTurnChangeMsg(self):
+        print "Trying to read data on turn change"
+        f = filereader.read(settings.teamfile)
+        game = 0
+        for g in f:
+            if g.name == self.gamenamedata:
+                game = g
+                break
+        try:
+            gs = dom4status.query(settings.domserver, g.port)
+            self.sendmsg(game.name + "n vuoro vaihtui! Vuoro " + str(gs.turn) + " alkoi!")
+            for nation in gs.nations:
+                if nation.statusnum == 254 and nation.name in game.players:
+                    self.sendmsg(game.players[nation.name] + " tipahti pelistä!")
+                elif nation.statusnum == 254:
+                    self.sendmsg("Desuiitta tipahti pelistä!")
+        except:
+            self.sendmsg("Virhe! " + game.name + "n servuun ei saa yhteyttä!")
+                
+    def turnChange(self, conn):
         print "yhteys"
         while True:
             data = conn.recv(2048)
@@ -86,14 +107,18 @@ class Ircbot:
             if not data:
                 break
             else:
-                self.sendmsg(data)
+                #näemmä timer tulkitsee stringin taulukoksi argumentteja, joten pitää pistää muualle talteen
+                #joo, tuntuu tyhmältä
+                self.gamenamedata = str(data)
+                self.turnChangeTimer = Timer(10, self.sendTurnChangeMsg, args=())
+                self.turnChangeTimer.start()
         conn.close()
     
     def listenTurnChange(self):
         while not self.done:
             conn, addr = self.listensocket.accept()
             print "avataan yhteys"
-            t = threading.Thread(target=self.sendTurnChangeMsg, args=(conn,))
+            t = threading.Thread(target=self.turnChange, args=(conn,))
             t.start()
 
     def check( self, line ):
