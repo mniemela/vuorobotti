@@ -80,7 +80,7 @@ class Ircbot:
 
         self.send( 'JOIN %s' % self.channel )
         
-    def sendTurnChangeMsg(self):
+    def sendTurnChangeMsg(self, data):
         print "Trying to read data on turn change"
         f = filereader.read(settings.teamfile)
         game = 0
@@ -107,10 +107,7 @@ class Ircbot:
             if not data:
                 break
             else:
-                #näemmä timer tulkitsee stringin taulukoksi argumentteja, joten pitää pistää muualle talteen
-                #joo, tuntuu tyhmältä
-                self.gamenamedata = str(data)
-                self.turnChangeTimer = Timer(10, self.sendTurnChangeMsg, args=())
+                self.turnChangeTimer = Timer(10, self.sendTurnChangeMsg, args=([data]))
                 self.turnChangeTimer.start()
         conn.close()
     
