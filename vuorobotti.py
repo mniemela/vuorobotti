@@ -88,6 +88,9 @@ class Ircbot:
             if g.name == self.gamenamedata:
                 game = g
                 break
+        if game == 0:
+            print "Peliä " + data + " ei ole olemassa!"
+            return
         try:
             gs = dom4status.query(settings.domserver, g.port)
             self.sendmsg(game.name + "n vuoro vaihtui! Vuoro " + str(gs.turn) + " alkoi!")
